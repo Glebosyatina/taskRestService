@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: "tasks"
+      POSTGRES_USER: "testuser"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - tasksdb:/var/lib/postges/data
+    network_mode: host
+
+  app:
+    image: myapp:0.0.1
+    container_name: my_app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    network_mode: host
+
+volumes:
+  tasksdb:
+
