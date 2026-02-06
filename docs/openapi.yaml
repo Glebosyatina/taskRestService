@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: Task Rest Service API
+  description: REST-сервис для управления задачами (CRUDL операции и закрытие задач)
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+paths:
+  /health:
+    get:
+      summary: Проверка работоспособности сервиса
+      description: Возвращает статус 200 OK, если сервис работает.
+      responses:
+        '200':
+          description: Сервис работает корректно
+          content:
+            text/plain:
+              example: "OK"
+  /tasks/create:
+    post:
+      summary: Создание новой задачи
+      description: Создает новую задачу. По умолчанию созданная задача имеет статус "открыта" (open=true).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '201':
+          description: Задача успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Неверный формат запроса
+  /tasks:
+    get:
+      summary: Получение списка всех задач
+      description: Возвращает массив всех существующих задач.
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+  /tasks/{id}:
+    get:
+      summary: Получение задачи по ID
+      description: Возвращает задачу с указанным идентификатором.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор задачи
+          schema:
+            type: integer
+            example: 42
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Задача с указанным ID не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/update/{id}:
+    put:
+      summary: Обновление задачи по ID
+      description: Полностью обновляет информацию о задаче с указанным идентификатором.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор обновляемой задачи
+          schema:
+            type: integer
+            example: 42
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+      responses:
+        '200':
+          description: Задача успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Задача с указанным ID не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/close/{id}:
+    put:
+      summary: Закрытие задачи
+      description: Изменяет статус задачи на "закрыта" (open=false).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор закрываемой задачи
+          schema:
+            type: integer
+            example: 42
+      responses:
+        '200':
+          description: Задача успешно закрыта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Задача с указанным ID не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/delete/{id}:
+    delete:
+      summary: Удаление задачи по ID
+      description: Удаляет задачу с указанным идентификатором.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор удаляемой задачи
+          schema:
+            type: integer
+            example: 42
+      responses:
+        '200':
+          description: Задача успешно удалена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Задача с указанным ID не найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/delete/all:
+    delete:
+      summary: Удаление всех задач
+      description: Удаляет все существующие задачи.
+      responses:
+        '200':
+          description: Все задачи успешно удалены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Все задачи удалены"
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Уникальный идентификатор задачи (генерируется автоматически)
+          readOnly: true
+          example: 1
+        description:
+          type: string
+          description: Текстовое описание задачи
+          example: "Завершить проект по документации API"
+        open:
+          type: boolean
+          description: Статус задачи. true - открыта, false - закрыта.
+          example: true
+    TaskRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Текстовое описание задачи
+          example: "Новая задача для выполнения"
+      # Поле "open" не включено, т.к. при создании через POST всегда true,
+      # а при обновлении через PUT должно передаваться явно, если нужно изменить.
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-02-06T15:30:00Z"
+        status:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: "Not Found"
+        message:
+          type: string
+          example: "Task is not found with id : 999"
+        path:
+          type: string
+          example: "/tasks/999"
