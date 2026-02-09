@@ -49,6 +49,32 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Task'
+  /tasks/status/open:
+    get:
+      summary: Получение списка открытых задач
+      description: Возвращает массив всех задач со статусом "открыта" (open=true).
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+  /tasks/status/close:
+    get:
+      summary: Получение списка закрытых задач
+      description: Возвращает массив всех задач со статусом "закрыта" (open=false).
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
   /tasks/{id}:
     get:
       summary: Получение задачи по ID
