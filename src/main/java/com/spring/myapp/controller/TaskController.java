@@ -72,4 +72,18 @@ public class TaskController {
         taskService.deleteAll();
         return new ResponseEntity<String>("Все задачи удалены", HttpStatus.OK);
     }
+
+
+    //фильтрация по закрытым/открытым таскам
+    @GetMapping("/tasks/status/open")
+    public List<Task> filterTaskOpen(){
+        return taskService.filterOpenTasks();
+    }
+
+    @GetMapping("/tasks/status/close")
+    public List<Task> filterTaskClose(){
+        return taskService.filterCloseTasks();
+    }
+
+
 }

@@ -78,4 +78,14 @@ public class TaskServiceImpl implements TaskService{
     public void deleteAll() {
         taskRepository.deleteAll();
     }
+
+    @Override
+    public List<Task> filterOpenTasks(){
+        return taskRepository.findAllByOpen(true);
+    }
+
+    @Override
+    public List<Task> filterCloseTasks() {
+        return taskRepository.findAllByOpen(false);
+    }
 }

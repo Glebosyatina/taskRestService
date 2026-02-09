@@ -16,4 +16,6 @@ public interface TaskService {
     Task closeTask(Integer id);
     Task deleteTaskById(Integer id);
     void deleteAll();
+    List<Task> filterOpenTasks();
+    List<Task> filterCloseTasks();
 }
